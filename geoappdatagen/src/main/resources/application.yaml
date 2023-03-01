@@ -1,0 +1,58 @@
+
+########### Spring Cloud Stream Configuration
+
+
+########## Spring Kafka Configuration (Only Used for publishing test messages)
+
+spring:
+  kafka:
+    producer:
+      client-id: geoapp-data-simulator
+      bootstrap-servers: ec2-44-211-25-154.compute-1.amazonaws.com:9093
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+#      properties:
+#        security:
+#          protocol: SSL
+#        auto:
+#          register:
+#            schemas: false
+#        value:
+#          subject:
+#            name:
+#              strategy: io.confluent.kafka.serializers.subject.TopicNameStrategy
+#        schema:
+#          registry:
+#            url: https://schemaregistry.dev.eks.aws.cfkdev.cloud:443
+#            ssl:
+#              truststore:
+#                location: c:/tmp/kstreams/confluent-dev/kafkaclient-truststore.jks
+#                password: mystorepassword
+#                type: JKS
+#              keystore:
+#                location: c:/tmp/kstreams/confluent-dev/kafkaclient-keystore.jks
+#                password: mystorepassword
+#        ssl:
+#          truststore:
+#            location: c:/tmp/kstreams/confluent-dev/kafkaclient-truststore.jks
+#            password: mystorepassword
+#            type: JKS
+#          keystore:
+#            location: c:/tmp/kstreams/confluent-dev/kafkaclient-keystore.jks
+#            password: mystorepassword
+
+logging:
+  level:
+    #org.springframework: debug
+    com:
+      example:
+        demo:
+          geoappdatagen: debug
+
+
+application:
+  configs:
+    sensor.data.file.location: "data/messages"
+    lgds.input.topic.name: lgds_events_raw
+    rvss.input.topic.name: rvss_events_raw
