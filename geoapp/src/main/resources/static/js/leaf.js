@@ -2,7 +2,8 @@
  * Demo Configuration
  */
 const DEMO_MODE = false;
-const ALERTS_URL = 'http://localhost:8080/geoapp/sensor/getAlertEvents'
+const ALERTS_URL = 'http://localhost:8080/geoapp/sensor/getAlertEvents';
+const EVENTS_URL = 'http://localhost:8080/geoapp/sensor/getSensorEvents';
 
 const startingLat = 31.33412133026897;
 const startingLon = -109.9484372078248;
@@ -56,7 +57,7 @@ const startingMarkers = DEMO_MODE ?
 
     ] : [];
 
-const alertTypes = ['Fence Cutting', 'Jumping', 'Car Driving', 'Car Speeding'];
+const alertTypes = ['Fence Cutting', 'Fence Climbing', 'Jumping', 'Car Driving', 'Car Speeding'];
 
 /* End Configuration */
 
@@ -71,10 +72,17 @@ const btnAlertsShow = document.querySelector('#btn-alerts-show');
 const btnAlertsHide = document.querySelector('#btn-alerts-hide');
 var selectedAlert = null;
 
-const eventIcon = L.icon({
+const eventIconRed = L.icon({
     iconUrl: 'images/map-pin-red.svg',
     iconSize: [20, 35],
-    iconAnchor: [10, 34]
+    iconAnchor: [10, 34],
+    popupAnchor: [0, -27],
+});
+const eventIconGreen = L.icon({
+    iconUrl: 'images/map-pin-green.svg',
+    iconSize: [20, 35],
+    iconAnchor: [10, 34],
+    popupAnchor: [0, 0],
 });
 
 let initialize = () => {
@@ -121,7 +129,17 @@ let initialize = () => {
     btnAlertsHide.addEventListener('click', () => toggleAlertsPane(false));
 
     // start polling for alerts
+    setInterval(fetchEvents, pollIntervalMs);
     setInterval(fetchAlerts, pollIntervalMs);
+};
+
+const addEvent = (data) => {
+    let pos = L.latLng(data.latitude, data.longitude);
+    let marker = createSourceEventMarker(data.sensorType, data.eventType, pos);
+    marker.bindPopup(createEventPopupHtml(data.eventType, data), {
+        maxWidth: 350
+    });
+    eventMarkers.addLayer(marker);
 };
 
 let addAlert = (data) => {
@@ -134,13 +152,13 @@ let addAlert = (data) => {
     );
     // create map marker
     let marker = createAlertMarker(name, position);
-    marker.bindPopup(createPopupHtml(name, data), {
+    marker.bindPopup(createAlertPopupHtml(name, data), {
         maxWidth: 400
     });
     // create markers for source events
     let events = [
-        createSourceEventMarker('LGDS', data.lgdsEventType, pos1),
-        createSourceEventMarker('RVSS', data.rvssEventType, pos2)
+        createSourceEventMarker('LGDS', data.lgdsEventType, pos1, eventIconGreen),
+        createSourceEventMarker('RVSS', data.rvssEventType, pos2, eventIconGreen)
     ];
     let features = [
         L.polyline([position, pos1], { color: 'red' }),
@@ -180,8 +198,8 @@ let addAlert = (data) => {
     // handle popup events
     marker.on('popupopen', () => {
         console.log('opening popup for', alert);
-        alert.features.forEach(feature => eventMarkers.addLayer(feature));
-        alert.events.forEach(evt => eventMarkers.addLayer(evt));
+        alert.features.forEach(feature => alertMarkers.addLayer(feature));
+        alert.events.forEach(evt => alertMarkers.addLayer(evt));
         if (selectedAlert) selectedAlert.item.classList.remove('selected');
         selectedAlert = alert;
         item.classList.add('selected');
@@ -189,8 +207,8 @@ let addAlert = (data) => {
     });
     marker.on('popupclose', () => {
         console.log('closing popup for', alert);
-        alert.features.forEach(feature => eventMarkers.removeLayer(feature));
-        alert.events.forEach(evt => eventMarkers.removeLayer(evt));
+        alert.features.forEach(feature => alertMarkers.removeLayer(feature));
+        alert.events.forEach(evt => alertMarkers.removeLayer(evt));
     });
     // add to nav list
     alertList.prepend(item);
@@ -204,16 +222,73 @@ let createAlertMarker = (name, position) => {
         });
 };
 
-let createSourceEventMarker = (source, type, position) => {
+let createSourceEventMarker = (source, type, position, icon = eventIconRed) => {
     return L.marker(
         position,
         {
-            title: `${source} Event: ${type}`,
-            icon: eventIcon
+            title: `${source.toUpperCase()} Event: ${type}`,
+            icon: icon
         });
 };
 
-let createPopupHtml = (name, alert) => {
+let createEventPopupHtml = (name, event) => {
+    return `
+        <div id="popup">
+            <h1>Event: ${name}</h1>           
+            <article>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Event Details</th>
+                    </tr>
+                    <tr>
+                        <td>Sensor Type</td>
+                        <td>${event.sensorType}</td>
+                    </tr>
+                    <tr>
+                        <td>Id</td>
+                        <td>${event.eventId}</td>
+                    </tr>
+                    <tr>
+                        <td>Date</td>
+                        <td>${new Date(event.eventTime).toLocaleDateString()}</td>
+                    </tr>
+                    <tr>
+                        <td>Time</td>
+                        <td>${new Date(event.eventTime).toLocaleTimeString()}</td>
+                    </tr>
+                    <tr>
+                        <td>Severity</td>
+                        <td>${event.severity}</td>
+                    </tr>
+                    <tr>
+                        <td>Type</td>
+                        <td>${event.eventType}</td>
+                    </tr>
+                    <tr>
+                        <td>Latitude</td>
+                        <td>${event.latitude}</td>
+                    </tr>
+                    <tr>
+                        <td>Longitude</td>
+                        <td>${event.longitude}</td>
+                    </tr>
+                    <tr>
+                        <td>Geohash</td>
+                        <td>${event.geohash}</td>
+                    </tr>
+                </table>
+            </article>
+            <footer>
+                <button class="btn-control"><i class="fa-solid fa-trash"></i> Dismiss</button>
+                <button class="btn-control"><i class="fa-solid fa-circle-plus"></i> Add to Case</button>
+                <button class="btn-control"><i class="fa-solid fa-triangle-exclamation"></i> Dispatch Agents</button>
+            </footer>
+        </div>
+    `;
+};
+
+let createAlertPopupHtml = (name, alert) => {
     let table = document.createElement('table');
     Object.keys(alert).forEach(key => {
         let tr = document.createElement('tr');
@@ -309,7 +384,7 @@ let fetchAlerts = () => {
     console.log('calling alert api...');
 
     const fetcher = DEMO_MODE ?
-        createDemoData() :
+        createDemoAlerts() :
         fetch(ALERTS_URL, {
             method: 'GET',
             mode: 'cors',
@@ -327,7 +402,34 @@ let fetchAlerts = () => {
                 console.log(`adding marker at [${alert.lgdsEventLatitude}, ${alert.lgdsEventLongitude}]`);
                 addAlert(alert);
             });
-            //map.flyTo([data.lgdsEventLatitude, data.lgdsEventLongitude], startingZoom);
+        })
+        .catch(e => {
+            console.error(e);
+        });
+};
+
+let fetchEvents = () => {
+    console.log('calling event api...');
+
+    const fetcher = DEMO_MODE ?
+        createDemoEvents() :
+        fetch(EVENTS_URL, {
+            method: 'GET',
+            mode: 'cors',
+            cache: 'no-cache',
+            headers: {
+                'Accept': 'application/json'
+            }
+        }).then(response => response.json())
+
+    fetcher
+        .then(data => {
+            data = Array.isArray(data) ? data : [data];
+            // load the data on the map
+            data.forEach(event => {
+                console.log(`adding marker at [${event.latitude}, ${event.longitude}]`);
+                addEvent(event);
+            });
         })
         .catch(e => {
             console.error(e);
@@ -354,7 +456,7 @@ const randomLongitude = (min = -180, max = 180) => randomInRange(min, max);
 const randomAlertType = () => alertTypes[Math.floor(randomInRange(0, alertTypes.length - 1))];
 const midpoint = (pos1, pos2) => L.latLng((pos1.lat + pos2.lat) / 2, (pos1.lng + pos2.lng) / 2);
 
-let createDemoData = () => {
+const createDemoAlerts = () => {
     const data = {
         "lgdsEventId": "lgds2",
         "lgdsEventLongitude": randomLongitude(demoDataRect.lonMin, demoDataRect.lonMax),
@@ -370,6 +472,22 @@ let createDemoData = () => {
         "rvssEventSeverity": "Critical",
         "rvssEventType": randomAlertType(),
         "rvssGeoHash": "wdw4f820h17g"
+    };
+    return new Promise((resolve, reject) => {
+        resolve(data);
+    });
+};
+
+const createDemoEvents = () => {
+    const data = {
+        "sensorType": "lgds",
+        "eventId": "lgds-event-1",
+        "latitude": randomLatitude(demoDataRect.latMin, demoDataRect.latMax),
+        "longitude": randomLongitude(demoDataRect.lonMin, demoDataRect.lonMax),
+        "eventType": randomAlertType(),
+        "severity": "high",
+        "geohash": "9t9f60gsp9hc",
+        "eventTime": new Date().getTime()
     };
     return new Promise((resolve, reject) => {
         resolve(data);
