@@ -58,6 +58,7 @@ const startingMarkers = DEMO_MODE ?
     ] : [];
 
 const alertTypes = ['Fence Cutting', 'Fence Climbing', 'Jumping', 'Car Driving', 'Car Speeding'];
+const sensorTypes = ['lgds', 'rvss'];
 
 /* End Configuration */
 
@@ -83,6 +84,12 @@ const eventIconGreen = L.icon({
     iconSize: [20, 35],
     iconAnchor: [10, 34],
     popupAnchor: [0, 0],
+});
+const eventIconCamera = L.icon({
+    iconUrl: 'images/map-pin-camera.svg',
+    iconSize: [20, 35],
+    iconAnchor: [10, 34],
+    popupAnchor: [0, -27],
 });
 
 let initialize = () => {
@@ -135,7 +142,11 @@ let initialize = () => {
 
 const addEvent = (data) => {
     let pos = L.latLng(data.latitude, data.longitude);
-    let marker = createSourceEventMarker(data.sensorType, data.eventType, pos);
+    let marker = createSourceEventMarker(
+        data.sensorType,
+        data.eventType,
+        pos,
+        data.sensorType === 'rvss' ? eventIconCamera : eventIconRed);
     marker.bindPopup(createEventPopupHtml(data.eventType, data), {
         maxWidth: 350
     });
@@ -188,12 +199,13 @@ let addAlert = (data) => {
         item.classList.add('selected');
         item.classList.remove('alert-new');
         //map.flyTo(position, startingZoom);
+        marker.openPopup(position);
         map.flyToBounds([
             position,
             pos1,
             pos2
         ]);
-        marker.openPopup(position);
+        //console.log('popup latlng', marker.getPopup());
     });
     // handle popup events
     marker.on('popupopen', () => {
@@ -233,7 +245,7 @@ let createSourceEventMarker = (source, type, position, icon = eventIconRed) => {
 
 let createEventPopupHtml = (name, event) => {
     return `
-        <div id="popup">
+        <div id="popup" class="popup-${event.sensorType}">
             <h1>Event: ${name}</h1>           
             <article>
                 <table>
@@ -273,16 +285,13 @@ let createEventPopupHtml = (name, event) => {
                         <td>Longitude</td>
                         <td>${event.longitude}</td>
                     </tr>
-                    <tr>
-                        <td>Geohash</td>
-                        <td>${event.geohash}</td>
-                    </tr>
                 </table>
+                <img class="popup-media" src="images/stock-camera.jpeg" alt="rvss image"></img>
             </article>
             <footer>
                 <button class="btn-control"><i class="fa-solid fa-trash"></i> Dismiss</button>
                 <button class="btn-control"><i class="fa-solid fa-circle-plus"></i> Add to Case</button>
-                <button class="btn-control"><i class="fa-solid fa-triangle-exclamation"></i> Dispatch Agents</button>
+                <button class="btn-control"><i class="fa-solid fa-triangle-exclamation"></i> Notify Agents</button>
             </footer>
         </div>
     `;
@@ -302,7 +311,7 @@ let createAlertPopupHtml = (name, alert) => {
     </article>
     */
     return `
-        <div id="popup">
+        <div id="popup" class="popup-alert">
             <h1>Alert: ${name}</h1>           
             <article>
                 <table>
@@ -346,17 +355,13 @@ let createAlertPopupHtml = (name, alert) => {
                         <td>${alert.lgdsEventLongitude}</td>
                         <td>${alert.rvssEventLongitude}</td>
                     </tr>
-                    <tr>
-                        <td>Geohash</td>
-                        <td>${alert.lgdsGeoHash}</td>
-                        <td>${alert.rvssGeoHash}</td>
-                    </tr>
                 </table>
+                <img class="popup-media" src="images/stock-camera.jpeg" alt="rvss image"></img>
             </article>
             <footer>
                 <button class="btn-control"><i class="fa-solid fa-trash"></i> Dismiss</button>
                 <button class="btn-control"><i class="fa-solid fa-circle-plus"></i> Add to Case</button>
-                <button class="btn-control"><i class="fa-solid fa-triangle-exclamation"></i> Dispatch Agents</button>
+                <button class="btn-control"><i class="fa-solid fa-triangle-exclamation"></i> Notify Agents</button>
             </footer>
         </div>
     `;
@@ -453,7 +458,8 @@ const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
 const randomInRange = (min, max) => Math.random() * (max - min) + min;
 const randomLatitude = (min = -90, max = 90) => randomInRange(min, max);
 const randomLongitude = (min = -180, max = 180) => randomInRange(min, max);
-const randomAlertType = () => alertTypes[Math.floor(randomInRange(0, alertTypes.length - 1))];
+const randomAlertType = () => alertTypes[Math.floor(Math.random() * alertTypes.length)];
+const randomSensorType = () => sensorTypes[Math.floor(Math.random() * sensorTypes.length)];
 const midpoint = (pos1, pos2) => L.latLng((pos1.lat + pos2.lat) / 2, (pos1.lng + pos2.lng) / 2);
 
 const createDemoAlerts = () => {
@@ -480,7 +486,7 @@ const createDemoAlerts = () => {
 
 const createDemoEvents = () => {
     const data = {
-        "sensorType": "lgds",
+        "sensorType": randomSensorType(),
         "eventId": "lgds-event-1",
         "latitude": randomLatitude(demoDataRect.latMin, demoDataRect.latMax),
         "longitude": randomLongitude(demoDataRect.lonMin, demoDataRect.lonMax),

@@ -187,6 +187,15 @@ body {
     background-color: var(--SECONDARY_LIGHTEST);
 }
 
+#popup .popup-media {
+    display: none;
+}
+
+#popup.popup-rvss .popup-media, #popup.popup-alert .popup-media {
+    display: block;
+    margin-top: 1em;
+}
+
 #popup table td:first-child {
     font-weight: bold;
 }
