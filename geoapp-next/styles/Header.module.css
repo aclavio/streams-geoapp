@@ -1,0 +1,15 @@
+.header {
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    width: 100%;
+    margin: auto;
+    justify-items: start;
+    align-items: center;
+    background-color: var(--PRIMARY_DARKEST);
+    color: var(--PRIMARY_LIGHTEST);
+}
+
+.logo {
+    height: 80px;
+}

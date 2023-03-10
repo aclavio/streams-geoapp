@@ -1,0 +1,11 @@
+.button {
+    border: 1px solid var(--PRIMARY_LIGHTER);
+    border-radius: .3em;
+    background-color: var(--PRIMARY_LIGHTER);
+    cursor: pointer;
+    font-size: .9em;
+}
+
+.button:hover {
+    background-color: var(--PRIMARY_LIGHTER_EVEN);
+}
