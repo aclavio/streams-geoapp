@@ -5,7 +5,7 @@ import styles from '../styles/Popups.module.css';
 export default function EventPopup({ name, event, eventType }) {
     return (
         <div className={`${styles.popup} ${styles.eventPopup} ${eventType}`}>
-            <h1>Event {name}</h1>
+            <h1>Event: {name}</h1>
             <article>
                 <table>
                     <tr>

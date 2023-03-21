@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import dynamic from 'next/dynamic';
 import useSWR from 'swr';
@@ -21,63 +21,50 @@ const startingPosition = [
   process.env.NEXT_PUBLIC_STARTING_LONGITUDE
 ];
 
-const alerts = [
-  {
-    "lgdsEventId": "lgds2",
-    "lgdsEventLongitude": process.env.NEXT_PUBLIC_STARTING_LONGITUDE,
-    "lgdsEventLatitude": process.env.NEXT_PUBLIC_STARTING_LATITUDE,
-    "lgdsEventTime": new Date().getTime(),
-    "lgdsEventSeverity": "high",
-    "lgdsEventType": 'ldgs test',
-    "lgdsGeoHash": "wdw4f820h17g",
-    "rvssEventId": "rvss2",
-    "rvssEventLongitude": process.env.NEXT_PUBLIC_STARTING_LONGITUDE,
-    "rvssEventLatitude": process.env.NEXT_PUBLIC_STARTING_LATITUDE,
-    "rvssEventTime": new Date().getTime(),
-    "rvssEventSeverity": "Critical",
-    "rvssEventType": 'rvss test',
-    "rvssGeoHash": "wdw4f820h17g"
-  },
-  {
-    name: 'Test Alert 2',
-    time: new Date().getTime()
-  }
-];
-
-export async function getStaticProps() {
-  return {
-    props: {
-      alerts
-    }
-  };
-}
-
-function MapInterceptor(props) {
-  const map = useMap();
-  return null;
-}
-
 export default function Home(props) {
   const [alerts, setAlerts] = useState(props.alerts || []);
+  const [events, setEvents] = useState(props.events || []);
   const [alertsVisible, setAlertsVisible] = useState(true);
   const [selectedAlert, setSelectedAlert] = useState(null);
+  let map = null;
 
-  const alertsResponse = useSWR('/api/alerts', fetcher, {
-    refreshInterval: 5000
+  useSWR('/api/alerts', fetcher, {
+    refreshInterval: 10000,
+    onSuccess: (data) => {
+      //console.log('got alerts:', data);
+      setAlerts(alerts.concat(data));
+    }
   });
-  const eventsResponse = useSWR('/api/events', fetcher, {
-    refreshInterval: 5000
+  useSWR('/api/events', fetcher, {
+    refreshInterval: 5000,
+    onSuccess: (data) => {
+      //console.log('got events:', data);
+      setEvents(events.concat(data));
+    }
   });
-
-  console.log('got alerts:', alertsResponse.data);
-  console.log('got events:', eventsResponse.data);
 
   function toggleAlertsVisible() {
     setAlertsVisible(!alertsVisible);
+    if (map) {
+      console.log('invalidating map size');
+      map.invalidateSize(false);
+    };
   }
 
   function alertClicked(alert) {
     console.log('alert clicked!', alert);
+    alert.isNew = false;
+    setSelectedAlert(alert);
+    const pos = [alert.lgdsEventLatitude, alert.lgdsEventLongitude];
+    if (map) {
+      map.stop();
+      map.flyTo(pos);
+      //map.openPopup(pos);
+    }
+  }
+
+  function alertMarkerClicked(alert) {
+    console.log('alert marker clicked!', alert);
     alert.isNew = false;
     setSelectedAlert(alert);
   }
@@ -108,7 +95,19 @@ export default function Home(props) {
           alertClicked={alertClicked} />
         <DynamicMap className={styles.map} center={startingPosition} zoom={startingZoom} whenReady={whenReady}>
           {
-            ({ TileLayer, LayersControl, LayerGroup, Marker, Popup }, L) => {
+            ({ useMap, TileLayer, LayersControl, LayerGroup, Marker, Popup }, L) => {
+              // interecept the map
+              const MapInterceptor = () => {
+                const leafletMap = useMap();
+                useEffect(() => {
+                  console.log('intercepting map:', leafletMap);
+                  map = leafletMap;
+                  map.invalidateSize(false);
+                }, []);
+                return null;
+              };
+
+              // setup icons
               const eventIconRed = L.icon({
                 iconUrl: '/images/map-pin-red.svg',
                 iconSize: [20, 35],
@@ -130,6 +129,7 @@ export default function Home(props) {
 
               return (
                 <>
+                  <MapInterceptor />
                   <LayersControl possition='topright'>
                     <LayersControl.BaseLayer checked name='OpenStreetMap'>
                       <TileLayer
@@ -150,25 +150,39 @@ export default function Home(props) {
                     </LayersControl.BaseLayer>
                     <LayersControl.Overlay checked name='Alerts'>
                       <LayerGroup>
-                        <Marker title='test' position={startingPosition}>
-                          <Popup maxWidth={400}>
-                            <AlertPopup name='test' alert={{}} />
-                          </Popup>
-                        </Marker>
+                        {
+                          alerts.map((alert, idx) => (
+                            <Marker
+                              key={idx}
+                              title={`Alert: ${alert.lgdsEventType} - ${alert.rvssEventType}`}
+                              position={[alert.lgdsEventLatitude, alert.lgdsEventLongitude]}
+                              eventHandlers={{
+                                click: () => alertMarkerClicked(alert)
+                              }}
+                            >
+                              <Popup maxWidth={400}>
+                                <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} />
+                              </Popup>
+                            </Marker>
+                          ))
+                        }
                       </LayerGroup>
                     </LayersControl.Overlay>
                     <LayersControl.Overlay checked name='Events'>
                       <LayerGroup>
-                        <Marker title='test' position={[0, 0]} icon={eventIconRed}>
-                          <Popup maxWidth={400}>
-                            <EventPopup name='lgds test' event={{}} />
-                          </Popup>
-                        </Marker>
-                        <Marker title='test' position={[0.05, 0]} icon={eventIconCamera}>
-                          <Popup maxWidth={400}>
-                            <EventPopup name='rvss test' event={{}} eventType='rvss' />
-                          </Popup>
-                        </Marker>
+                        {
+                          events.map((event, idx) => (
+                            <Marker
+                              key={idx}
+                              title={`Event: ${event.eventType}`}
+                              position={[event.latitude, event.longitude]}
+                              icon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}>
+                              <Popup maxWidth={400}>
+                                <EventPopup name={event.eventType} event={event} eventType={event.sensorType} />
+                              </Popup>
+                            </Marker>
+                          ))
+                        }
                       </LayerGroup>
                     </LayersControl.Overlay>
                   </LayersControl>

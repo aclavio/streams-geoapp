@@ -5,7 +5,7 @@ import styles from '../styles/Popups.module.css';
 export default function AlertPopup({ name, alert }) {
     return (
         <div className={`${styles.popup} ${styles.alertPopup}`}>
-            <h1>Alert {name}</h1>
+            <h1>Alert: {name}</h1>
             <article>
                 <table>
                     <tr>

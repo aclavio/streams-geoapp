@@ -31,5 +31,6 @@ const createEvent = () => {
 };
 
 export default function handler(req, res) {
-  res.status(200).json(createEvent());
+  const events = [createEvent()];
+  res.status(200).json(events);
 }

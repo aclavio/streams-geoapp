@@ -33,5 +33,6 @@ const createAlert = () => {
 };
 
 export default function handler(req, res) {
-  res.status(200).json(createAlert());
+  const alerts = [createAlert()]
+  res.status(200).json(alerts);
 }
