@@ -13,64 +13,6 @@
 .alerts {
   width: 400px;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.alertsHeader {
-  padding: 1em;
-  height: 3.5em;
-  background-color: var(--PRIMARY_DARKER);
-  color: var(--PRIMARY_LIGHTEST);
-  font-weight: bold;
-  display: flex;
-  justify-content: space-between;
-}
-
-.alertsScroller {
-  overflow-y: auto;
-  display: flex;
-  flex-grow: 1;
-}
-
-.alertsContainer {
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-}
-
-.alert {
-  cursor: pointer;
-  padding: 10px;
-  border-bottom: 1px solid var(--DIM_LIGHT);
-}
-
-.alert:hover {
-  background-color: var(--DIM_LIGHTEST);
-}
-
-.alert.selected {
-  background-color: var(--PRIMARY_LIGHTER);
-}
-
-.alert.selected:hover {
-  background-color: var(--PRIMARY_LIGHTER_EVEN);
-}
-
-.alert .alert-time {
-  font-size: .7em;
-  color: var(--CONTENT_SECONDARY);
-}
-
-.alert .alert-notice {
-  display: none;
-}
-
-.alert.alert-new .alert-notice {
-  display: block;
-  float: right;
-  font-size: .6em;
-  color: var(--PRIMARY);
 }
 
 .btnControl {

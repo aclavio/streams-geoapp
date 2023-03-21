@@ -1,0 +1,223 @@
+:root {
+    --CONTENT_SECONDARY: #55546B;
+    --PRIMARY_DARKEST: #142b52;
+    --PRIMARY_DARKER: #006B95;
+    --PRIMARY_DARK: #007EAF;
+    --PRIMARY: #00AFBA;
+    --PRIMARY_LIGHT: #45C6E8;
+    --PRIMARY_LIGHTER: #A5DEEF;
+    --PRIMARY_LIGHTER_EVEN: #D7EFF6;
+    --PRIMARY_LIGHTEST: #E5F5FB;
+    --SECONDARY_DARKEST: #5C3607;
+    --SECONDARY_DARKER: #7E5522;
+    --SECONDARY_DARK: #986B34;
+    --SECONDARY: #BC8540;
+    --SECONDARY_LIGHT: #D4A05E;
+    --SECONDARY_LIGHTER: #EDCA9E;
+    --SECONDARY_LIGHTER_EVEN: #FFE6C6;
+    --SECONDARY_LIGHTEST: #FFF2E3;
+    --SECONDARY_HIGHLIGHT: #7D19FF;
+    --DIM_DARKEST: #191924;
+    --DIM_DARKER: #141430;
+    --DIM_DARK: #242446;
+    --DIM: #504F6C;
+    --DIM_LIGHT: #747391;
+    --DIM_LIGHTER: #A8A8B8;
+    --DIM_LIGHTER_EVEN: #E0E0E7;
+    --DIM_LIGHTEST: #F8F8FA;
+    --TERTIARY_LIGHTEST: #F4F8FB;
+    --ERROR: #FF005C;
+    --ERROR_DARK: #BA0430;
+    --WARNING: #FF9900;
+    --WHITE: #FFFFFF;
+    --BLACK: #000000;
+    --FONT_FAMILY: -apple-system, BlinkMacSystemFont, Inter, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --MONO_FONT_FAMILY: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+body {
+    background-color: var(--DIM_LIGHTER_EVEN);
+    font-family: var(--FONT_FAMILY);
+}
+
+#header {
+    display: flex;
+    flex-direction: row;
+    height: 80px;
+    width: 100%;
+    margin: auto;
+    justify-items: start;
+    align-items: center;
+    background-color: var(--PRIMARY_DARKEST);
+    color: var(--PRIMARY_LIGHTEST);
+}
+
+#header .logo {
+    height: 80px;
+}
+
+#main {
+    position: absolute;
+    top: 80px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+#alerts {
+    width: 400px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#alerts #alerts-header {
+    padding: 1em;
+    height: 3.5em;
+    background-color: var(--PRIMARY_DARKER);
+    color: var(--PRIMARY_LIGHTEST);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+#alerts #alerts-scroller {
+    overflow-y: auto;
+    display: flex;
+    flex-grow: 1;
+}
+
+#alerts #alerts-container {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+#alerts .alert {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid var(--DIM_LIGHT);
+}
+
+#alerts .alert:hover {
+    background-color: var(--DIM_LIGHTEST);
+}
+
+#alerts .alert.selected {
+    background-color: var(--PRIMARY_LIGHTER);
+}
+
+#alerts .alert.selected:hover {
+    background-color: var(--PRIMARY_LIGHTER_EVEN);
+}
+
+#alerts .alert .alert-time {
+    font-size: .7em;
+    color: var(--CONTENT_SECONDARY);
+}
+
+#alerts .alert .alert-notice {
+    display: none;
+}
+
+#alerts .alert.alert-new .alert-notice {
+    display: block;
+    float: right;
+    font-size: .6em;
+    color: var(--PRIMARY);
+}
+
+#map {
+    flex-grow: 1;
+}
+
+.btn-control {
+    border: 1px solid var(--PRIMARY_LIGHTER);
+    border-radius: .3em;
+    background-color: var(--PRIMARY_LIGHTER);
+    cursor: pointer;
+    font-size: .9em;
+}
+
+.btn-control:hover {
+    background-color: var(--PRIMARY_LIGHTER_EVEN);
+}
+
+#alerts.alerts-visible {}
+
+#alerts.alerts-hidden {
+    width: 3.5em;
+}
+
+#alerts.alerts-hidden .alerts-title {
+    display: none;
+}
+
+#alerts.alerts-hidden #alerts-scroller {
+    display: none;
+}
+
+#alerts.alerts-visible #btn-alerts-show {
+    display: none;
+}
+
+#alerts.alerts-visible #btn-alerts-hide {
+    display: block;
+}
+
+#alerts.alerts-hidden #btn-alerts-show {
+    display: block;
+}
+
+#alerts.alerts-hidden #btn-alerts-hide {
+    display: none;
+}
+
+#popup table {
+    width: 100%;
+}
+
+#popup article {
+    padding: 0.5em;
+    border: 1px solid var(--DIM_LIGHTER);
+    border-radius: 0.5em;
+    margin: 1em 0;
+    background-color: var(--SECONDARY_LIGHTEST);
+}
+
+#popup .popup-media {
+    display: none;
+}
+
+#popup.popup-rvss .popup-media, #popup.popup-alert .popup-media {
+    display: block;
+    margin-top: 1em;
+}
+
+#popup table td:first-child {
+    font-weight: bold;
+}
+
+#popup footer {
+    display: flex;
+    justify-content: end;
+    margin-top: 5px;
+    font-size: 1.2em;
+}
+
+#popup footer .btn-control {
+    margin-left: 8px;
+    background-color: var(--DIM_LIGHTEST);
+    border-color: var(--DIM_LIGHTER);
+}
+
+#popup footer .btn-control:hover {
+    background-color: var(--PRIMARY_LIGHTER);
+}
+
+.source-event-marker {
+    font-size: 30px;
+    color: var(--WARNING);
+}

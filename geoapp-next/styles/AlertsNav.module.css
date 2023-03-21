@@ -1,0 +1,71 @@
+.alerts {
+    display: flex;
+    flex-direction: column;
+}
+
+.alertsVisible {}
+
+.alertsHidden {
+    width: 3.5em;
+}
+
+.alertsHidden .alertsTitle,
+.alertsHidden .alertsScroller {
+    display: none;
+}
+
+.alertsHeader {
+    padding: 1em;
+    height: 3.5em;
+    background-color: var(--PRIMARY_DARKER);
+    color: var(--PRIMARY_LIGHTEST);
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+}
+
+.alertsScroller {
+    overflow-y: auto;
+    display: flex;
+    flex-grow: 1;
+}
+
+.alertsContainer {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+}
+
+.alertItem {
+    cursor: pointer;
+    padding: 10px;
+    border-bottom: 1px solid var(--DIM_LIGHT);
+}
+
+.alertItem:hover {
+    background-color: var(--DIM_LIGHTEST);
+}
+
+.alertItem.selected {
+    background-color: var(--PRIMARY_LIGHTER);
+}
+
+.alertItem.selected:hover {
+    background-color: var(--PRIMARY_LIGHTER_EVEN);
+}
+
+.alertTime {
+    font-size: .7em;
+    color: var(--CONTENT_SECONDARY);
+}
+
+.alertNotice {
+    display: none;
+}
+
+.alertNew .alertNotice {
+    display: block;
+    float: right;
+    font-size: .6em;
+    color: var(--PRIMARY);
+}

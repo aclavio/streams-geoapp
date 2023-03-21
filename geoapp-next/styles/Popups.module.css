@@ -1,0 +1,49 @@
+.popup {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.alertPopup,
+.eventPopup {
+    width: 400px;
+    max-width: 400px;
+}
+
+.popup h1 {
+    text-align: center;
+}
+
+.popup article {
+    padding: 0.5em;
+    border: 1px solid var(--DIM_LIGHTER);
+    border-radius: 0.5em;
+    margin: 1em 0;
+    background-color: var(--SECONDARY_LIGHTEST);
+}
+
+.popup table {
+    width: 100%;
+}
+
+.popup footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    font-size: 1.2em;
+}
+
+.media {
+    margin-bottom: 1em;
+}
+
+.buttonCtrl {
+    margin-left: 0.25em;
+    background-color: var(--DIM_LIGHTEST);
+    border-color: var(--DIM_LIGHTER);
+}
+
+.buttonCtrl:hover {
+    background-color: var(--PRIMARY_LIGHTER);
+}

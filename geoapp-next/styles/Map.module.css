@@ -1,48 +1,5 @@
 .map {}
 
-#popup table {
-    width: 100%;
-}
-
-#popup article {
-    padding: 0.5em;
-    border: 1px solid var(--DIM_LIGHTER);
-    border-radius: 0.5em;
-    margin: 1em 0;
-    background-color: var(--SECONDARY_LIGHTEST);
-}
-
-#popup .popup-media {
-    display: none;
-}
-
-#popup.popup-rvss .popup-media,
-#popup.popup-alert .popup-media {
-    display: block;
-    margin-top: 1em;
-}
-
-#popup table td:first-child {
-    font-weight: bold;
-}
-
-#popup footer {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 5px;
-    font-size: 1.2em;
-}
-
-#popup footer .btn-control {
-    margin-left: 8px;
-    background-color: var(--DIM_LIGHTEST);
-    border-color: var(--DIM_LIGHTER);
-}
-
-#popup footer .btn-control:hover {
-    background-color: var(--PRIMARY_LIGHTER);
-}
-
 .source-event-marker {
     font-size: 30px;
     color: var(--WARNING);
