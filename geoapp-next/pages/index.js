@@ -21,6 +21,8 @@ const startingPosition = [
   process.env.NEXT_PUBLIC_STARTING_LONGITUDE
 ];
 
+const calculateMidpoint = (lat1, lon1, lat2, lon2) => [(lat1 + lat2) / 2, (lon1 + lon2) / 2];
+
 export default function Home(props) {
   const [alerts, setAlerts] = useState(props.alerts || []);
   const [events, setEvents] = useState(props.events || []);
@@ -32,6 +34,12 @@ export default function Home(props) {
     refreshInterval: 10000,
     onSuccess: (data) => {
       //console.log('got alerts:', data);
+      data.forEach(alert => alert.midpoint = calculateMidpoint(
+        alert.lgdsEventLatitude,
+        alert.lgdsEventLongitude,
+        alert.rvssEventLatitude,
+        alert.rvssEventLongitude
+      ));
       setAlerts(alerts.concat(data));
     }
   });
@@ -55,10 +63,11 @@ export default function Home(props) {
     console.log('alert clicked!', alert);
     alert.isNew = false;
     setSelectedAlert(alert);
-    const pos = [alert.lgdsEventLatitude, alert.lgdsEventLongitude];
+    const pos1 = [alert.lgdsEventLatitude, alert.lgdsEventLongitude];
+    const pos2 = [alert.rvssEventLatitude, alert.rvssEventLongitude];
     if (map) {
       map.stop();
-      map.flyTo(pos);
+      map.flyToBounds([pos1, pos2]);
       //map.openPopup(pos);
     }
   }
@@ -69,8 +78,9 @@ export default function Home(props) {
     setSelectedAlert(alert);
   }
 
-  function whenReady() {
-    console.log('map ready event');
+  function eventMarkerClicked(event) {
+    console.log('event marker clicked!', event);
+    setSelectedAlert(null);
   }
 
   return (
@@ -93,9 +103,9 @@ export default function Home(props) {
           selectedAlert={selectedAlert}
           toggleVisible={toggleAlertsVisible}
           alertClicked={alertClicked} />
-        <DynamicMap className={styles.map} center={startingPosition} zoom={startingZoom} whenReady={whenReady}>
+        <DynamicMap className={styles.map} center={startingPosition} zoom={startingZoom} >
           {
-            ({ useMap, TileLayer, LayersControl, LayerGroup, Marker, Popup }, L) => {
+            ({ useMap, TileLayer, LayersControl, LayerGroup, Marker, Popup, Polyline }, L) => {
               // interecept the map
               const MapInterceptor = () => {
                 const leafletMap = useMap();
@@ -152,18 +162,40 @@ export default function Home(props) {
                       <LayerGroup>
                         {
                           alerts.map((alert, idx) => (
-                            <Marker
-                              key={idx}
-                              title={`Alert: ${alert.lgdsEventType} - ${alert.rvssEventType}`}
-                              position={[alert.lgdsEventLatitude, alert.lgdsEventLongitude]}
-                              eventHandlers={{
-                                click: () => alertMarkerClicked(alert)
-                              }}
-                            >
-                              <Popup maxWidth={400}>
-                                <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} />
-                              </Popup>
-                            </Marker>
+                            <LayerGroup key={idx}>
+                              <Marker
+                                title={`Alert: ${alert.lgdsEventType} - ${alert.rvssEventType}`}
+                                position={alert.midpoint}
+                                eventHandlers={{
+                                  click: () => alertMarkerClicked(alert)
+                                }}
+                              >
+                                <Popup maxWidth={400}>
+                                  <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} />
+                                </Popup>
+                              </Marker>
+                              {
+                                selectedAlert === alert &&
+                                <>
+                                  <Polyline
+                                    positions={[alert.midpoint, [alert.lgdsEventLatitude, alert.lgdsEventLongitude]]}
+                                    pathOptions={{ color: 'red' }} />
+                                  <Polyline
+                                    positions={[alert.midpoint, [alert.rvssEventLatitude, alert.rvssEventLongitude]]}
+                                    pathOptions={{ color: 'red' }} />
+                                  <Marker
+                                    title={`LGDS Event: ${alert.lgdsEventType}`}
+                                    position={[alert.lgdsEventLatitude, alert.lgdsEventLongitude]}
+                                    icon={eventIconGreen}
+                                  />
+                                  <Marker
+                                    title={`RVSS Event: ${alert.rvssEventType}`}
+                                    position={[alert.rvssEventLatitude, alert.rvssEventLongitude]}
+                                    icon={eventIconGreen}
+                                  />
+                                </>
+                              }
+                            </LayerGroup>
                           ))
                         }
                       </LayerGroup>
@@ -176,7 +208,11 @@ export default function Home(props) {
                               key={idx}
                               title={`Event: ${event.eventType}`}
                               position={[event.latitude, event.longitude]}
-                              icon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}>
+                              icon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}
+                              eventHandlers={{
+                                click: () => eventMarkerClicked(event)
+                              }}
+                            >
                               <Popup maxWidth={400}>
                                 <EventPopup name={event.eventType} event={event} eventType={event.sensorType} />
                               </Popup>
