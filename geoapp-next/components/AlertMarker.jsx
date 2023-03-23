@@ -1,10 +1,12 @@
+import { forwardRef } from "react";
 import AlertPopup from "./AlertPopup";
 
-export default function AlertMarker({ ReactLeaflet, alertIcon, eventIcon, alert, alertMarkerClicked, selected }) {
+const AlertMarker = forwardRef(({ ReactLeaflet, alertIcon, eventIcon, alert, alertMarkerClicked, selected }, ref) => {
   const { LayerGroup, Marker, Popup, Polyline } = ReactLeaflet;
   return (
     <LayerGroup >
       <Marker
+        ref={ref}
         title={`Alert: ${alert.lgdsEventType} - ${alert.rvssEventType}`}
         position={alert.midpoint}
         icon={alertIcon}
@@ -39,4 +41,6 @@ export default function AlertMarker({ ReactLeaflet, alertIcon, eventIcon, alert,
       }
     </LayerGroup>
   );
-}
+});
+
+export default AlertMarker;

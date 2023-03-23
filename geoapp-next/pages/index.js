@@ -69,7 +69,9 @@ export default function Home(props) {
       map.closePopup();
       map.stop();
       map.flyToBounds([pos1, pos2]);
-      //map.openPopup(pos);
+      if (alert.marker) {
+        alert.marker.openPopup();
+      }
     }
   }
 
@@ -82,6 +84,11 @@ export default function Home(props) {
   function eventMarkerClicked(event) {
     console.log('event marker clicked!', event);
     setSelectedAlert(null);
+  }
+
+  function handleAlertRef(alert, marker) {
+    // store the marker ref in the alert so it can be opened programatically
+    alert.marker = marker;
   }
 
   return (
@@ -166,6 +173,7 @@ export default function Home(props) {
                           alerts.map((alert, idx) => (
                             <AlertMarker
                               key={idx}
+                              ref={handleAlertRef.bind(this, alert)}
                               alert={alert}
                               selected={selectedAlert === alert}
                               ReactLeaflet={ReactLeaflet}
