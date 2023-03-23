@@ -5,8 +5,8 @@ import useSWR from 'swr';
 import styles from '../styles/Home.module.css';
 import Header from '../components/Header';
 import AlertsNav from '../components/AlertsNav';
-import AlertPopup from '../components/AlertPopup';
-import EventPopup from '../components/EventPopup';
+import AlertMarker from '../components/AlertMarker';
+import EventMarker from '../components/EventMarker';
 
 const DynamicMap = dynamic(() => import('../components/DynamicMap'), {
   ssr: false
@@ -30,7 +30,7 @@ export default function Home(props) {
   const [selectedAlert, setSelectedAlert] = useState(null);
   let map = null;
 
-  useSWR('/api/alerts', fetcher, {
+  useSWR(process.env.NEXT_PUBLIC_ALERTS_URL, fetcher, {
     refreshInterval: 10000,
     onSuccess: (data) => {
       //console.log('got alerts:', data);
@@ -43,7 +43,7 @@ export default function Home(props) {
       setAlerts(alerts.concat(data));
     }
   });
-  useSWR('/api/events', fetcher, {
+  useSWR(process.env.NEXT_PUBLIC_EVENTS_URL, fetcher, {
     refreshInterval: 5000,
     onSuccess: (data) => {
       //console.log('got events:', data);
@@ -66,6 +66,7 @@ export default function Home(props) {
     const pos1 = [alert.lgdsEventLatitude, alert.lgdsEventLongitude];
     const pos2 = [alert.rvssEventLatitude, alert.rvssEventLongitude];
     if (map) {
+      map.closePopup();
       map.stop();
       map.flyToBounds([pos1, pos2]);
       //map.openPopup(pos);
@@ -105,7 +106,8 @@ export default function Home(props) {
           alertClicked={alertClicked} />
         <DynamicMap className={styles.map} center={startingPosition} zoom={startingZoom} >
           {
-            ({ useMap, TileLayer, LayersControl, LayerGroup, Marker, Popup, Polyline }, L) => {
+            (ReactLeaflet, L) => {
+              const { useMap, TileLayer, LayersControl, LayerGroup } = ReactLeaflet;
               // interecept the map
               const MapInterceptor = () => {
                 const leafletMap = useMap();
@@ -162,40 +164,15 @@ export default function Home(props) {
                       <LayerGroup>
                         {
                           alerts.map((alert, idx) => (
-                            <LayerGroup key={idx}>
-                              <Marker
-                                title={`Alert: ${alert.lgdsEventType} - ${alert.rvssEventType}`}
-                                position={alert.midpoint}
-                                eventHandlers={{
-                                  click: () => alertMarkerClicked(alert)
-                                }}
-                              >
-                                <Popup maxWidth={400}>
-                                  <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} />
-                                </Popup>
-                              </Marker>
-                              {
-                                selectedAlert === alert &&
-                                <>
-                                  <Polyline
-                                    positions={[alert.midpoint, [alert.lgdsEventLatitude, alert.lgdsEventLongitude]]}
-                                    pathOptions={{ color: 'red' }} />
-                                  <Polyline
-                                    positions={[alert.midpoint, [alert.rvssEventLatitude, alert.rvssEventLongitude]]}
-                                    pathOptions={{ color: 'red' }} />
-                                  <Marker
-                                    title={`LGDS Event: ${alert.lgdsEventType}`}
-                                    position={[alert.lgdsEventLatitude, alert.lgdsEventLongitude]}
-                                    icon={eventIconGreen}
-                                  />
-                                  <Marker
-                                    title={`RVSS Event: ${alert.rvssEventType}`}
-                                    position={[alert.rvssEventLatitude, alert.rvssEventLongitude]}
-                                    icon={eventIconGreen}
-                                  />
-                                </>
-                              }
-                            </LayerGroup>
+                            <AlertMarker
+                              key={idx}
+                              alert={alert}
+                              selected={selectedAlert === alert}
+                              ReactLeaflet={ReactLeaflet}
+                              alertIcon={new L.Icon.Default()}
+                              eventIcon={eventIconGreen}
+                              alertMarkerClicked={alertMarkerClicked}
+                            />
                           ))
                         }
                       </LayerGroup>
@@ -204,19 +181,13 @@ export default function Home(props) {
                       <LayerGroup>
                         {
                           events.map((event, idx) => (
-                            <Marker
+                            <EventMarker
                               key={idx}
-                              title={`Event: ${event.eventType}`}
-                              position={[event.latitude, event.longitude]}
-                              icon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}
-                              eventHandlers={{
-                                click: () => eventMarkerClicked(event)
-                              }}
-                            >
-                              <Popup maxWidth={400}>
-                                <EventPopup name={event.eventType} event={event} eventType={event.sensorType} />
-                              </Popup>
-                            </Marker>
+                              event={event}
+                              ReactLeaflet={ReactLeaflet}
+                              eventIcon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}
+                              eventMarkerClicked={eventMarkerClicked}
+                            />
                           ))
                         }
                       </LayerGroup>
