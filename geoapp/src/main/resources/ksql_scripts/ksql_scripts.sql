@@ -1,5 +1,5 @@
 -- Creates a stream of lgds events data
-DROP STREAM lgds_events_stream;
+DROP STREAM IF EXISTS lgds_events_stream;
 
 CREATE STREAM lgds_events_stream (
   sensorType VARCHAR,
@@ -17,7 +17,7 @@ CREATE STREAM lgds_events_stream (
 
 
 -- Creates a stream of rvvs events data
-DROP STREAM rvss_events_stream;
+DROP STREAM IF EXISTS rvss_events_stream;
 
 CREATE STREAM rvss_events_stream (
   sensorType VARCHAR,
@@ -37,7 +37,7 @@ CREATE STREAM rvss_events_stream (
 
 
 -- drop stream
-DROP STREAM sensor_alerts_stream ;
+DROP STREAM IF EXISTS sensor_alerts_stream ;
 
 CREATE STREAM sensor_alerts_stream 
 WITH (

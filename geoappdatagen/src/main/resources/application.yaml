@@ -8,11 +8,18 @@ spring:
   kafka:
     producer:
       client-id: geoapp-data-simulator
-      bootstrap-servers: ec2-44-211-25-154.compute-1.amazonaws.com:9093
+      bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #sasl:
+      #  jaas-config: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka-admin" password="admin-secret";
+      #  mechanism: PLAIN
+      #security:
+      #  protocol: SASL_PLAINTEXT
       #value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-#      properties:
+      #properties:
+      #  sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka-admin" password="admin-secret";
+      #  sasl.mechanism: PLAIN
 #        security:
 #          protocol: SSL
 #        auto:
@@ -28,19 +35,19 @@ spring:
 #            ssl:
 #              truststore:
 #                location: c:/tmp/kstreams/confluent-dev/kafkaclient-truststore.jks
-#                password: mystorepassword
+#                password: 
 #                type: JKS
 #              keystore:
 #                location: c:/tmp/kstreams/confluent-dev/kafkaclient-keystore.jks
-#                password: mystorepassword
+#                password: 
 #        ssl:
 #          truststore:
 #            location: c:/tmp/kstreams/confluent-dev/kafkaclient-truststore.jks
-#            password: mystorepassword
+#            password: 
 #            type: JKS
 #          keystore:
 #            location: c:/tmp/kstreams/confluent-dev/kafkaclient-keystore.jks
-#            password: mystorepassword
+#            password: 
 
 logging:
   level:

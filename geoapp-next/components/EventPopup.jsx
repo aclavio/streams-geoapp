@@ -2,7 +2,7 @@ import Image from 'next/image';
 import SolidButton from './SolidButton';
 import styles from '../styles/Popups.module.css';
 
-export default function EventPopup({ name, event, eventType }) {
+export default function EventPopup({ name, event, eventType, onDismiss }) {
     return (
         <div className={`${styles.popup} ${styles.eventPopup} ${eventType}`}>
             <h1>Event: {name}</h1>
@@ -55,7 +55,7 @@ export default function EventPopup({ name, event, eventType }) {
                     height={268} />
             }
             <footer>
-                <SolidButton icon="fa-trash" className={styles.buttonCtrl}> Dismiss</SolidButton>
+                <SolidButton icon="fa-trash" className={styles.buttonCtrl} onClick={onDismiss}> Dismiss</SolidButton>
                 <SolidButton icon="fa-circle-plus" className={styles.buttonCtrl}> Add to Case</SolidButton>
                 <SolidButton icon="fa-triangle-exclamation" className={styles.buttonCtrl}> Notify Agents</SolidButton>
             </footer>

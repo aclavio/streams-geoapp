@@ -12,7 +12,7 @@ const DynamicMap = dynamic(() => import('../components/DynamicMap'), {
   ssr: false
 });
 
-const fetcher = (...args) => fetch(...args).then(res => res.json());
+const fetcher = (...args) => fetch(...args, { mode: 'no-cors' }).then(res => res.json());
 
 const mapBoxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 const startingZoom = process.env.NEXT_PUBLIC_STARTING_ZOOM;
@@ -91,6 +91,29 @@ export default function Home(props) {
     alert.marker = marker;
   }
 
+  function handleDismissEvent(event) {
+    console.log('dismiss event clicked', event);
+    if (map) {
+      map.closePopup();
+      map.stop();
+    }
+    const updatedEvents = events.filter(e => e !== event);
+    setEvents(updatedEvents);
+  }
+
+  function handleDismissAlert(alert) {
+    console.log('dismiss alert clicked', alert);
+    if (confirm(`Dismiss Alert "${alert.lgdsEventType} - ${alert.rvssEventType}"?`)) {
+      if (map) {
+        map.closePopup();
+        map.stop();
+      }
+      setSelectedAlert(null);
+      const updatedAlerts = alerts.filter(a => a !== alert);
+      setAlerts(updatedAlerts);
+    }
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -114,7 +137,7 @@ export default function Home(props) {
         <DynamicMap className={styles.map} center={startingPosition} zoom={startingZoom} >
           {
             (ReactLeaflet, L) => {
-              const { useMap, TileLayer, LayersControl, LayerGroup } = ReactLeaflet;
+              const { useMap, TileLayer, LayersControl, LayerGroup, ScaleControl } = ReactLeaflet;
               // interecept the map
               const MapInterceptor = () => {
                 const leafletMap = useMap();
@@ -149,7 +172,8 @@ export default function Home(props) {
               return (
                 <>
                   <MapInterceptor />
-                  <LayersControl possition='topright'>
+                  <ScaleControl position='bottomleft' />
+                  <LayersControl position='topright'>
                     <LayersControl.BaseLayer checked name='OpenStreetMap'>
                       <TileLayer
                         url='https://tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -180,6 +204,7 @@ export default function Home(props) {
                               alertIcon={new L.Icon.Default()}
                               eventIcon={eventIconGreen}
                               alertMarkerClicked={alertMarkerClicked}
+                              onDismiss={handleDismissAlert.bind(this, alert)}
                             />
                           ))
                         }
@@ -195,6 +220,7 @@ export default function Home(props) {
                               ReactLeaflet={ReactLeaflet}
                               eventIcon={event.sensorType === 'rvss' ? eventIconCamera : eventIconRed}
                               eventMarkerClicked={eventMarkerClicked}
+                              onDismiss={handleDismissEvent.bind(this, event)}
                             />
                           ))
                         }

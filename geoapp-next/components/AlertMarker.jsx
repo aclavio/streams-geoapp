@@ -1,7 +1,7 @@
 import { forwardRef } from "react";
 import AlertPopup from "./AlertPopup";
 
-const AlertMarker = forwardRef(({ ReactLeaflet, alertIcon, eventIcon, alert, alertMarkerClicked, selected }, ref) => {
+const AlertMarker = forwardRef(({ ReactLeaflet, alertIcon, eventIcon, alert, alertMarkerClicked, onDismiss, selected }, ref) => {
   const { LayerGroup, Marker, Popup, Polyline } = ReactLeaflet;
   return (
     <LayerGroup >
@@ -15,7 +15,7 @@ const AlertMarker = forwardRef(({ ReactLeaflet, alertIcon, eventIcon, alert, ale
         }}
       >
         <Popup maxWidth={400}>
-          <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} />
+          <AlertPopup name={`${alert.lgdsEventType} - ${alert.rvssEventType}`} alert={alert} onDismiss={onDismiss} />
         </Popup>
       </Marker>
       {

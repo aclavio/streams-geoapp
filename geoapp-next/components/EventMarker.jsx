@@ -1,6 +1,6 @@
 import EventPopup from "./EventPopup";
 
-export default function EventMarker({ ReactLeaflet, eventIcon, event, eventMarkerClicked }) {
+export default function EventMarker({ ReactLeaflet, eventIcon, event, eventMarkerClicked, onDismiss }) {
     const { LayerGroup, Marker, Popup } = ReactLeaflet;
     return (
         <Marker
@@ -12,7 +12,7 @@ export default function EventMarker({ ReactLeaflet, eventIcon, event, eventMarke
             }}
         >
             <Popup maxWidth={400}>
-                <EventPopup name={event.eventType} event={event} eventType={event.sensorType} />
+                <EventPopup name={event.eventType} event={event} eventType={event.sensorType} onDismiss={onDismiss} />
             </Popup>
         </Marker>
     )
