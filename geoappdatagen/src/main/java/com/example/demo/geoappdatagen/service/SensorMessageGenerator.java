@@ -2,6 +2,7 @@ package com.example.demo.geoappdatagen.service;
 
 import com.example.demo.geoappdatagen.model.BaseEvent;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.elasticsearch.geo.utils.Geohash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +18,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class SensorMessageGenerator {
 
     Logger logger = LoggerFactory.getLogger(SensorMessageGenerator.class);
+
+    private static final List<String> SENSOR_TYPES = Arrays.asList("rvss", "lgds");
+    private static final List<String> EVENT_TYPES = Arrays.asList("Fence Cutting", "Fence Climbing", "Jumping", "Car Driving", "Car Speeding");
+    private static final List<String> SEVERITY = Arrays.asList("high", "medium", "low");
+    @Value("${application.configs.latitude.min:-90}")
+    private Double LAT_MIN;
+    @Value("${application.configs.latitude.max:90}")
+    private Double LAT_MAX;
+    @Value("${application.configs.longitude.min:-180}")
+    private Double LON_MIN;
+    @Value("${application.configs.longitude.max:180}")
+    private Double LON_MAX;
 
     @Autowired
     @Qualifier("objectMapper")
@@ -109,5 +120,20 @@ public class SensorMessageGenerator {
         return messageList.size();
     }
 
-
+    public BaseEvent generateRandomEvent() {
+        Random rand = ThreadLocalRandom.current();
+        String sensorType = SENSOR_TYPES.get(rand.nextInt(SENSOR_TYPES.size()));
+        BaseEvent event = new BaseEvent();
+        event.setSensorType(sensorType);
+        event.setEventId(String.format("%s-event-%s", sensorType, UUID.randomUUID()));
+        event.setEventType(EVENT_TYPES.get(rand.nextInt(EVENT_TYPES.size())));
+        event.setSeverity(SEVERITY.get(rand.nextInt(SEVERITY.size())));
+        event.setEventTimeStrFormatted(getEventTimeFormatted());
+        double latitude = rand.nextDouble() * (LAT_MAX - LAT_MIN) + LAT_MIN;
+        event.setLatitude(latitude);
+        double longitude = rand.nextDouble() * (LON_MAX - LON_MIN) + LON_MIN;
+        event.setLongitude(longitude);
+        event.setGeohash(Geohash.stringEncode(longitude, latitude, 12));
+        return event;
+    }
 }

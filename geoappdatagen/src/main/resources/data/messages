@@ -16,6 +16,6 @@
 {"sensorType": "lgds", "eventId": "lgds-event-16", "eventTime": 1677498998712, "latitude": 31.334434, "longitude": -109.958568, "eventType": "Climbing", "severity": "high", "geohash": "9t9f3b6879v5" }
 {"sensorType": "rvss", "eventId": "rvss-event-17", "eventTime": 1677498912715, "latitude": 31.334395, "longitude": -109.956539, "eventType": "Truck",    "severity": "medium", "geohash": "9t9f3bk04ftf" }
 {"sensorType": "lgds", "eventId": "lgds-event-18", "eventTime": 1677498977715, "latitude": 31.334615, "longitude": -109.956152, "eventType": "Walking",  "severity": "low", "geohash": "9t9f3bk37gwe" }
-{"sensorType": "rvss", "eventId": "rvss-event-19", "eventTime": 1677498988715, "latitude": 31.335715, "longitude": -109.954534, "eventType": "People",   "severity": "low", "severity": "high", "geohash": "9t9f3bmxc8tj" }
+{"sensorType": "rvss", "eventId": "rvss-event-19", "eventTime": 1677498988715, "latitude": 31.335715, "longitude": -109.954534, "eventType": "People",   "severity": "low", "geohash": "9t9f3bmxc8tj" }
 {"sensorType": "lgds", "eventId": "lgds-event-20", "eventTime": 1677498998712, "latitude": 31.335496, "longitude": -109.954233, "eventType": "Digging",  "severity": "high", "geohash": "9t9f3bmy2xv6" }
 {"sensorType": "rvss", "eventId": "rvss-event-21", "eventTime": 1677498998712, "latitude": 31.333406, "longitude": -109.956552, "eventType": "Climbing", "severity": "high", "geohash": "9t9f3bh46dhr" }

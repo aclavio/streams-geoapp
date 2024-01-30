@@ -138,7 +138,7 @@ export default function Home(props) {
           {
             (ReactLeaflet, L) => {
               const { useMap, TileLayer, LayersControl, LayerGroup, ScaleControl } = ReactLeaflet;
-              // interecept the map
+              // intercept the map
               const MapInterceptor = () => {
                 const leafletMap = useMap();
                 useEffect(() => {

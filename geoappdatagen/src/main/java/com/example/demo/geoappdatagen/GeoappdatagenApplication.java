@@ -6,6 +6,7 @@ import com.example.demo.geoappdatagen.service.SensorMessageGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -27,6 +28,9 @@ public class GeoappdatagenApplication implements ApplicationRunner {
 	@Autowired
 	private SensorMessageGenerator sensorMessageGenerator;
 
+	@Value("${application.configs.random.event.count:0}")
+	private int randomEventCount;
+
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		/*
@@ -38,18 +42,31 @@ public class GeoappdatagenApplication implements ApplicationRunner {
 		for (int i = 0; i < messageCount; i++) {
 			try {
 				BaseEvent event = sensorMessageGenerator.getNextMessage();
-				if (event.getSensorType().equalsIgnoreCase("rvss")) {
-					kafkaMessageProducer.generateRvssEvent(event);
-				} else if (event.getSensorType().equalsIgnoreCase("lgds")) {
-					kafkaMessageProducer.generateLgdsEvent(event);
-				} else {
-					logger.error(">>>>>> INVALID MESSAGE TYPE <<<<<<, unable to determine destination");
-				}
+				publishEvent(event);
 				Thread.sleep(1400);
-			}catch (Exception ex) {
+			} catch (Exception ex) {
 				logger.error("Exception Thrown while publishing messages", ex);
 			}
+		}
 
+		for (int i = 0; i < randomEventCount; i++) {
+			try {
+				BaseEvent event = sensorMessageGenerator.generateRandomEvent();
+				publishEvent(event);
+				Thread.sleep(1400);
+			} catch (Exception ex) {
+				logger.error("Exception Thrown while publishing random messages", ex);
+			}
+		}
+	}
+
+	private void publishEvent(BaseEvent event) throws Exception {
+		if (event.getSensorType().equalsIgnoreCase("rvss")) {
+			kafkaMessageProducer.generateRvssEvent(event);
+		} else if (event.getSensorType().equalsIgnoreCase("lgds")) {
+			kafkaMessageProducer.generateLgdsEvent(event);
+		} else {
+			logger.error(">>>>>> INVALID MESSAGE TYPE <<<<<<, unable to determine destination");
 		}
 	}
 

@@ -63,3 +63,10 @@ application:
     sensor.data.file.location: "data/messages"
     lgds.input.topic.name: lgds_events_raw
     rvss.input.topic.name: rvss_events_raw
+    latitude:
+      max: 31.414600276313234
+      min: 31.23863703909769
+    longitude:
+      max: -110.17776489257814
+      min: -109.46777343750001
+    random.event.count: 100
