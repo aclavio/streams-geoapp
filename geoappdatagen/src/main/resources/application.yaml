@@ -64,9 +64,9 @@ application:
     lgds.input.topic.name: lgds_events_raw
     rvss.input.topic.name: rvss_events_raw
     latitude:
-      max: 31.414600276313234
-      min: 31.23863703909769
+      max: 31.346942
+      min: 31.322146
     longitude:
-      max: -110.17776489257814
-      min: -109.46777343750001
-    random.event.count: 100
+      max: -109.965740
+      min: -109.928502
+    random.event.count: 200

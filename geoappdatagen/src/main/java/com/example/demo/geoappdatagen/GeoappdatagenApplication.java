@@ -53,7 +53,7 @@ public class GeoappdatagenApplication implements ApplicationRunner {
 			try {
 				BaseEvent event = sensorMessageGenerator.generateRandomEvent();
 				publishEvent(event);
-				Thread.sleep(1400);
+				Thread.sleep(3000);
 			} catch (Exception ex) {
 				logger.error("Exception Thrown while publishing random messages", ex);
 			}

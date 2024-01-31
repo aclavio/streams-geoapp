@@ -17,6 +17,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -129,9 +131,15 @@ public class SensorMessageGenerator {
         event.setEventType(EVENT_TYPES.get(rand.nextInt(EVENT_TYPES.size())));
         event.setSeverity(SEVERITY.get(rand.nextInt(SEVERITY.size())));
         event.setEventTimeStrFormatted(getEventTimeFormatted());
-        double latitude = rand.nextDouble() * (LAT_MAX - LAT_MIN) + LAT_MIN;
+        Double latitude = rand.nextDouble() * (LAT_MAX - LAT_MIN) + LAT_MIN;
+        latitude = BigDecimal.valueOf(latitude)
+                .setScale(6, RoundingMode.HALF_UP)
+                .doubleValue();
         event.setLatitude(latitude);
         double longitude = rand.nextDouble() * (LON_MAX - LON_MIN) + LON_MIN;
+        longitude = BigDecimal.valueOf(longitude)
+                .setScale(6, RoundingMode.HALF_UP)
+                .doubleValue();
         event.setLongitude(longitude);
         event.setGeohash(Geohash.stringEncode(longitude, latitude, 12));
         return event;
