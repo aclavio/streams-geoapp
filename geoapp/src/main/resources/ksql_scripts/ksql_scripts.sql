@@ -1,39 +1,19 @@
 -- Creates a stream of lgds events data
 DROP STREAM IF EXISTS lgds_events_stream;
 
-CREATE STREAM lgds_events_stream (
-  sensorType VARCHAR,
-  eventId VARCHAR,
-  eventTime VARCHAR,
-  latitude DECIMAL(10,7),
-  longitude DECIMAL(10,7),
-  eventType VARCHAR,
-  severity VARCHAR,
-  geohash VARCHAR
-) WITH (
+CREATE STREAM lgds_events_stream WITH (
   KAFKA_TOPIC = 'lgds_events_raw',
-  VALUE_FORMAT = 'JSON'
+  VALUE_FORMAT = 'JSON_SR'
 );
 
 
 -- Creates a stream of rvvs events data
 DROP STREAM IF EXISTS rvss_events_stream;
 
-CREATE STREAM rvss_events_stream (
-  sensorType VARCHAR,
-  eventId VARCHAR,
-  eventTime VARCHAR,
-  latitude DECIMAL(10,7),
-  longitude DECIMAL(10,7),
-  eventType VARCHAR,
-  severity VARCHAR,
-  geohash VARCHAR
-) WITH (
+CREATE STREAM rvss_events_stream WITH (
   KAFKA_TOPIC = 'rvss_events_raw',
-  VALUE_FORMAT = 'JSON'
+  VALUE_FORMAT = 'JSON_SR'
 );
-
-
 
 
 -- drop stream
@@ -42,7 +22,7 @@ DROP STREAM IF EXISTS sensor_alerts_stream ;
 CREATE STREAM sensor_alerts_stream 
 WITH (
   kafka_topic= 'sensor_alerts_stream',
-  value_format= 'JSON'
+  value_format= 'JSON_SR'
 ) 
 AS SELECT
   rowkey as id,

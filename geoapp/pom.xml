@@ -13,9 +13,16 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>geoapp</name>
 	<description>Demo Geoapp project for Spring Boot</description>
+	<repositories>
+		<repository>
+			<id>confluent</id>
+			<url>https://packages.confluent.io/maven/</url>
+		</repository>
+	</repositories>
 	<properties>
 		<java.version>11</java.version>
 		<spring-cloud.version>2021.0.5</spring-cloud.version>
+		<confluent.version>7.5.3</confluent.version>
 	</properties>
 
 	<dependencies>
@@ -57,6 +64,11 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.14.2</version>
+		</dependency>
+		<dependency>
+			<groupId>io.confluent</groupId>
+			<artifactId>kafka-json-schema-serializer</artifactId>
+			<version>${confluent.version}</version>
 		</dependency>
 	</dependencies>
 

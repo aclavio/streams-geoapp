@@ -10,7 +10,8 @@ spring:
       client-id: geoapp-data-simulator
       bootstrap-servers: localhost:9092
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer
+      #value-serializer: org.apache.kafka.common.serialization.StringSerializer
       #sasl:
       #  jaas-config: org.apache.kafka.common.security.plain.PlainLoginModule required username="kafka-admin" password="admin-secret";
       #  mechanism: PLAIN
@@ -22,16 +23,16 @@ spring:
       #  sasl.mechanism: PLAIN
 #        security:
 #          protocol: SSL
-#        auto:
-#          register:
-#            schemas: false
+      auto:
+        register:
+          schemas: false
 #        value:
 #          subject:
 #            name:
 #              strategy: io.confluent.kafka.serializers.subject.TopicNameStrategy
-#        schema:
-#          registry:
-#            url: https://schemaregistry.dev.eks.aws.cfkdev.cloud:443
+      schema:
+        registry:
+          url: http://localhost:8081
 #            ssl:
 #              truststore:
 #                location: c:/tmp/kstreams/confluent-dev/kafkaclient-truststore.jks

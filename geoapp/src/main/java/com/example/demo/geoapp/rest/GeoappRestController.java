@@ -1,6 +1,7 @@
 package com.example.demo.geoapp.rest;
 
 import com.example.demo.geoapp.model.AlertEvent;
+import com.example.demo.geoapp.model.BaseEvent;
 import com.example.demo.geoapp.model.SensorEvent;
 import com.example.demo.geoapp.service.KafkaEventService;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class GeoappRestController {
 
 
     @GetMapping(path="/getSensorEvents", produces="application/json")
-    public List<SensorEvent> getSensorEvents() {
+    public List<BaseEvent> getSensorEvents() {
         logger.info("getSensorEvents API called, time {}", new Date());
         return kafkaEventService.getSensorEvents();
     }

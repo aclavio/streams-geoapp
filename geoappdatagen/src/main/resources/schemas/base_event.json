@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.com/base_event.json",
+  "type": "object",
+  "title": "Base Event",
+  "additionalProperties": false,
+  "properties": {
+    "sensorType": {
+      "type": "string"
+    },
+    "eventId": {
+      "type": "string"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "eventType": {
+      "type": "string"
+    },
+    "severity": {
+      "type": "string"
+    },
+    "geohash": {
+      "type": "string"
+    },
+    "eventTime": {
+      "type": "string"
+    }
+  },
+ "required": ["sensorType", "eventId", "latitude", "longitude", "eventType", "severity", "geohash", "eventTime"]
+}

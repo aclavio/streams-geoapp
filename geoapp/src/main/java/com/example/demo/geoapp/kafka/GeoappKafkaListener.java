@@ -1,6 +1,7 @@
 package com.example.demo.geoapp.kafka;
 
 import com.example.demo.geoapp.model.AlertEvent;
+import com.example.demo.geoapp.model.BaseEvent;
 import com.example.demo.geoapp.model.SensorEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,41 +26,58 @@ public class GeoappKafkaListener {
 
     @Autowired
     @Qualifier("sensorEventsList")
-    private List<SensorEvent> sensorEventsList;
+    private List<BaseEvent> sensorEventsList;
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
-    @KafkaListener(id = "alertEventsGrp", topics = "${alert.events.topic.name}" , clientIdPrefix = "geoAppAlertsClient")
-    public void listenAlertEvents(@Payload String message) {
-        logger.info("Consumer Read Alert Event::" + message);
+//    @KafkaListener(id = "alertEventsGrp", topics = "${alert.events.topic.name}" , clientIdPrefix = "geoAppAlertsClient")
+//    public void listenAlertEvents(@Payload String message) {
+//        logger.info("Consumer Read Alert Event::" + message);
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            AlertEvent alertEvent = objectMapper.readValue(message, AlertEvent.class);
+//            //add to event list
+//            alertEventsList.add(alertEvent);
+//
+//        }catch (JsonProcessingException jpEx) {
+//            logger.error("Exception in parsing Alert Event message::", jpEx);
+//            jpEx.printStackTrace();
+//        }
+//
+//    }
+
+    @KafkaListener(
+            id = "alertEventsGrp",
+            topics = "${alert.events.topic.name}",
+            clientIdPrefix = "geoAppAlertsClient",
+            containerFactory = "kafkaListenerAlertContainerFactory")
+    public void listenAlertEvents(@Payload AlertEvent message) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            AlertEvent alertEvent = objectMapper.readValue(message, AlertEvent.class);
+            logger.info("Consumer Read AlertEvent::{}", objectMapper.writeValueAsString(message));
             //add to event list
-            alertEventsList.add(alertEvent);
-
-        }catch (JsonProcessingException jpEx) {
-            logger.error("Exception in parsing Alert Event message::", jpEx);
-            jpEx.printStackTrace();
+            alertEventsList.add(message);
+        } catch (JsonProcessingException e) {
+            logger.error("Exception in parsing Alert Event message::", e);
+            e.printStackTrace();
         }
-
     }
 
-    @KafkaListener(id = "sensorEventsGrp", topics = {"${rvss.sensor.events.topic.name}","${lgds.sensor.events.topic.name}"}, clientIdPrefix = "geoAppSensorClient")
-    public void listenSensorEvents(@Payload String message) {
-        logger.info("Consumer Read SensorEvent::" + message);
+    @KafkaListener(
+            id = "sensorEventsGrp",
+            topics = {"${rvss.sensor.events.topic.name}","${lgds.sensor.events.topic.name}"},
+            clientIdPrefix = "geoAppSensorClient",
+            containerFactory = "kafkaListenerEventContainerFactory")
+    public void listenSensorEvents(@Payload BaseEvent message) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            SensorEvent sensorEvent = objectMapper.readValue(message, SensorEvent.class);
+            logger.info("Consumer Read SensorEvent::{}", objectMapper.writeValueAsString(message));
             //add to event list
-            sensorEventsList.add(sensorEvent);
-
-        }catch (JsonProcessingException jpEx) {
-            logger.error("Exception in parsing SensorEvent message::", jpEx);
-            jpEx.printStackTrace();
+            sensorEventsList.add(message);
+        } catch (JsonProcessingException e) {
+            logger.error("Exception in parsing SensorEvent message::", e);
+            e.printStackTrace();
         }
-
     }
-
 
 
 }

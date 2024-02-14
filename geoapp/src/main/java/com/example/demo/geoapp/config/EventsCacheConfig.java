@@ -1,6 +1,7 @@
 package com.example.demo.geoapp.config;
 
 import com.example.demo.geoapp.model.AlertEvent;
+import com.example.demo.geoapp.model.BaseEvent;
 import com.example.demo.geoapp.model.SensorEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -16,7 +17,7 @@ public class EventsCacheConfig {
     private List<AlertEvent> alertEventsList;
 
     //List to hold Sensor Events data
-    private List<SensorEvent> sensorEventsList;
+    private List<BaseEvent> sensorEventsList;
 
 
 
@@ -28,7 +29,7 @@ public class EventsCacheConfig {
     }
 
     @Bean(name="sensorEventsList")
-    public List<SensorEvent> initSensorEventsList() {
+    public List<BaseEvent> initSensorEventsList() {
         sensorEventsList = new ArrayList<>();
         return sensorEventsList;
     }

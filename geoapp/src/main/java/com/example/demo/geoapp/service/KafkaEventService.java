@@ -1,6 +1,7 @@
 package com.example.demo.geoapp.service;
 
 import com.example.demo.geoapp.model.AlertEvent;
+import com.example.demo.geoapp.model.BaseEvent;
 import com.example.demo.geoapp.model.SensorEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +22,7 @@ public class KafkaEventService {
 
     @Autowired
     @Qualifier("sensorEventsList")
-    private List<SensorEvent> sensorEventsList;
+    private List<BaseEvent> sensorEventsList;
 
     private int alertsCurrentOffset;
     private int alertsLastOffset;
@@ -45,10 +46,10 @@ public class KafkaEventService {
     /*
     Return a List of Sensor Events from ArrayList
      */
-    public List<SensorEvent> getSensorEvents() {
+    public List<BaseEvent> getSensorEvents() {
         sensorEventsLastOffset = sensorEventsList.size();
         logger.info("Sensor Events Cache Last Offset:: {}, Current Offset:: {}", sensorEventsLastOffset, sensorEventsCurrentOffset);
-        List<SensorEvent> sensorEventsListSinceLastFetch = sensorEventsList.subList(sensorEventsCurrentOffset, sensorEventsLastOffset);
+        List<BaseEvent> sensorEventsListSinceLastFetch = sensorEventsList.subList(sensorEventsCurrentOffset, sensorEventsLastOffset);
         sensorEventsCurrentOffset = sensorEventsLastOffset;
         return sensorEventsListSinceLastFetch;
     }

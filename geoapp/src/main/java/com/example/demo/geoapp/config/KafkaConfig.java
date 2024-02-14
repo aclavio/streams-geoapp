@@ -1,5 +1,10 @@
 package com.example.demo.geoapp.config;
 
+import com.example.demo.geoapp.model.AlertEvent;
+import com.example.demo.geoapp.model.BaseEvent;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerConfig;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializerConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,26 +30,56 @@ public class KafkaConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
 
+    @Value("${spring.kafka.consumer.schema.registry.url}")
+    String schemaRegistryUrl;
+
     @Bean
-    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>>
-    kafkaListenerContainerFactory() {
-        ConcurrentKafkaListenerContainerFactory<String, String> factory =
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, BaseEvent>>
+    kafkaListenerEventContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, BaseEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
-        factory.setConsumerFactory(consumerFactory());
+        factory.setConsumerFactory(eventConsumerFactory());
         factory.setConcurrency(1);
         //factory.getContainerProperties().setPollTimeout(3000);
         return factory;
     }
 
-
-
     @Bean
-    public ConsumerFactory<String, String> consumerFactory() {
+    public ConsumerFactory<String, BaseEvent> eventConsumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "geoAppConsumerGrp");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaJsonSchemaDeserializer.class);
+        props.put(KafkaJsonSchemaDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        props.put(KafkaJsonSchemaDeserializerConfig.JSON_VALUE_TYPE, BaseEvent.class);
+
+        return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean
+    KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, AlertEvent>>
+    kafkaListenerAlertContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, AlertEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(alertConsumerFactory());
+        factory.setConcurrency(1);
+        //factory.getContainerProperties().setPollTimeout(3000);
+        return factory;
+    }
+
+    @Bean
+    public ConsumerFactory<String, AlertEvent> alertConsumerFactory() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "geoAppConsumerGrp");
+        props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, KafkaJsonSchemaDeserializer.class);
+        props.put(KafkaJsonSchemaDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        props.put(KafkaJsonSchemaDeserializerConfig.JSON_VALUE_TYPE, AlertEvent.class);
+
         return new DefaultKafkaConsumerFactory<>(props);
     }
 

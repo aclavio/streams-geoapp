@@ -1,4 +1,4 @@
-package com.example.demo.geoappdatagen.model;
+package com.example.demo.geoapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
