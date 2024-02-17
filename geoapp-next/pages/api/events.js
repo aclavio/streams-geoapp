@@ -6,7 +6,7 @@ const alertTypes = ['Fence Cutting', 'Fence Climbing', 'Jumping', 'Car Driving',
 
 const randomAlertType = () => alertTypes[Math.floor(Math.random() * alertTypes.length)];
 
-const randomInRange = (min, max) => Math.random() * (max - min) + min;
+const randomInRange = (min, max) => parseFloat((Math.random() * (max - min) + min).toPrecision(5));
 const randomLatitude = (min = -90, max = 90) => randomInRange(min, max);
 const randomLongitude = (min = -180, max = 180) => randomInRange(min, max);
 

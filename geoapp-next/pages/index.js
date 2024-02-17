@@ -12,7 +12,7 @@ const DynamicMap = dynamic(() => import('../components/DynamicMap'), {
   ssr: false
 });
 
-const fetcher = (...args) => fetch(...args, { mode: 'no-cors' }).then(res => res.json());
+const fetcher = (...args) => fetch(...args, { mode: 'cors' }).then(res => res.json());
 
 const mapBoxAccessToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
 const startingZoom = process.env.NEXT_PUBLIC_STARTING_ZOOM;

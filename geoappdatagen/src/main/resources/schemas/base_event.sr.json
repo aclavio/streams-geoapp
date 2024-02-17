@@ -1,6 +1,36 @@
 {
- "schemaType": "JSON",
- "schema": "{  \"$schema\": \"http://json-schema.org/draft-07/schema#\",  \"$id\": \"https://example.com/base_event.json\",  \"type\": \"object\",  \"title\": \"Base Event\",  \"additionalProperties\": false,  \"properties\": {    \"sensorType\": {      \"type\": \"string\"    },    \"eventId\": {      \"type\": \"string\"    },    \"latitude\": {      \"type\": \"number\"    },    \"longitude\": {      \"type\": \"number\"    },    \"eventType\": {      \"type\": \"string\"    },    \"severity\": {      \"type\": \"string\"    },    \"geohash\": {      \"type\": \"string\"    },    \"eventTime\": {      \"type\": \"string\"    }  }, \"required\": [\"sensorType\", \"eventId\", \"latitude\", \"longitude\", \"eventType\", \"severity\", \"geohash\", \"eventTime\"]}",
- "metadata": {},
- "ruleSet": {}
+  "schemaType": "JSON",
+  "schema": "{  \"$schema\": \"http://json-schema.org/draft-07/schema#\",  \"$id\": \"https://example.com/base_event.json\",  \"type\": \"object\",  \"title\": \"Base Event\",  \"additionalProperties\": false,  \"properties\": {    \"sensorType\": {      \"type\": \"string\"    },    \"eventId\": {      \"type\": \"string\"    },    \"latitude\": {      \"type\": \"number\"    },    \"longitude\": {      \"type\": \"number\"    },    \"eventType\": {      \"type\": \"string\"    },    \"severity\": {      \"type\": \"string\"    },    \"geohash\": {      \"type\": \"string\"    },    \"eventTime\": {      \"type\": \"string\"    }  }, \"required\": [\"sensorType\", \"eventId\", \"latitude\", \"longitude\", \"eventType\", \"severity\", \"geohash\", \"eventTime\"]}",
+  "metadata": {
+    "properties": {
+      "owner": "John Doe",
+      "email": "john.doe@acme.com"
+    }
+  },
+  "ruleSet": {
+    "domainRules": [
+      {
+        "name": "checkLatitude",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "message.latitude >= -90.0 && message.latitude <= 90.0",
+        "params": {
+          "dlq.topic": "bad_geo_data_dlq"
+        },
+        "onFailure": "DLQ"
+      },
+      {
+        "name": "checkLongitude",
+        "kind": "CONDITION",
+        "type": "CEL",
+        "mode": "WRITE",
+        "expr": "message.longitude >= -180.0 && message.longitude <= 180.0",
+        "params": {
+          "dlq.topic": "bad_geo_data_dlq"
+        },
+        "onFailure": "DLQ"
+      }
+    ]
+  }
 }

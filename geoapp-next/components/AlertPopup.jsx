@@ -3,6 +3,27 @@ import SolidButton from './SolidButton';
 import styles from '../styles/Popups.module.css';
 
 export default function AlertPopup({ name, alert, onDismiss }) {
+
+    function getDateString(val) {
+        let ds;
+        try {
+            ds = new Date(val).toLocaleDateString();
+        } catch {
+            ds = 'ERR';
+        }
+        return ds;
+    }
+
+    function getTimeString(val) {
+        let ts;
+        try {
+            ts = new Date(val).toLocaleTimeString();
+        } catch {
+            ts = 'ERR';
+        }
+        return ts;
+    }
+
     return (
         <div className={`${styles.popup} ${styles.alertPopup}`}>
             <h1>Alert: {name}</h1>
@@ -20,13 +41,13 @@ export default function AlertPopup({ name, alert, onDismiss }) {
                     </tr>
                     <tr>
                         <td>Date</td>
-                        <td>{new Date(alert.lgdsEventTime).toLocaleDateString()}</td>
-                        <td>{new Date(alert.rvssEventTime).toLocaleDateString()}</td>
+                        <td>{getDateString(alert.lgdsEventTime)}</td>
+                        <td>{getDateString(alert.rvssEventTime)}</td>
                     </tr>
                     <tr>
                         <td>Time</td>
-                        <td>{new Date(alert.lgdsEventTime).toLocaleTimeString()}</td>
-                        <td>{new Date(alert.rvssEventTime).toLocaleTimeString()}</td>
+                        <td>{getTimeString(alert.lgdsEventTime)}</td>
+                        <td>{getTimeString(alert.rvssEventTime)}</td>
                     </tr>
                     <tr>
                         <td>Severity</td>

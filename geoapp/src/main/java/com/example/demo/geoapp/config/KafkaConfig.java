@@ -4,9 +4,12 @@ import com.example.demo.geoapp.model.AlertEvent;
 import com.example.demo.geoapp.model.BaseEvent;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaDeserializerConfig;
+import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializer;
 import io.confluent.kafka.serializers.json.KafkaJsonSchemaSerializerConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +19,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 
 import javax.validation.constraints.NotNull;
@@ -81,6 +86,19 @@ public class KafkaConfig {
         props.put(KafkaJsonSchemaDeserializerConfig.JSON_VALUE_TYPE, AlertEvent.class);
 
         return new DefaultKafkaConsumerFactory<>(props);
+    }
+
+    @Bean(name="geoEventsKafkaTemplate")
+    public KafkaTemplate<String, BaseEvent> geoEventsKafkaTemplate(ProducerFactory<String, BaseEvent> pf) {
+        Map<String, Object> props = new HashMap<>();
+        props.put(ProducerConfig.CLIENT_ID_CONFIG,"geoapp-producer");
+        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaJsonSchemaSerializer.class);
+        props.put(KafkaJsonSchemaSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        props.put(KafkaJsonSchemaSerializerConfig.AUTO_REGISTER_SCHEMAS, false);
+        props.put(KafkaJsonSchemaSerializerConfig.USE_LATEST_VERSION, true);
+
+        return new KafkaTemplate<>(pf, props);
     }
 
 

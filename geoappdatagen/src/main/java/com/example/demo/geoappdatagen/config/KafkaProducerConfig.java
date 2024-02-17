@@ -28,12 +28,10 @@ public class KafkaProducerConfig {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.CLIENT_ID_CONFIG,"geoapp-data-simulator");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        //props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaJsonSchemaSerializer.class);
-        //props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);
         props.put(KafkaJsonSchemaSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
         props.put(KafkaJsonSchemaSerializerConfig.AUTO_REGISTER_SCHEMAS, autoRegister);
-        props.put(KafkaJsonSchemaSerializerConfig.USE_SCHEMA_ID, 1);
+        props.put(KafkaJsonSchemaSerializerConfig.USE_LATEST_VERSION, true);
 
         return new KafkaTemplate<>(pf,
                 props);

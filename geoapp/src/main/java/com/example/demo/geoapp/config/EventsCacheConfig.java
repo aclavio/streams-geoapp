@@ -3,6 +3,7 @@ package com.example.demo.geoapp.config;
 import com.example.demo.geoapp.model.AlertEvent;
 import com.example.demo.geoapp.model.BaseEvent;
 import com.example.demo.geoapp.model.SensorEvent;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,14 @@ public class EventsCacheConfig {
     public List<BaseEvent> initSensorEventsList() {
         sensorEventsList = new ArrayList<>();
         return sensorEventsList;
+    }
+
+    private ObjectMapper objectMapper;
+
+    @Bean(name="objectMapper")
+    public ObjectMapper initObjectMapper() {
+        objectMapper = new ObjectMapper();
+        return objectMapper;
     }
 
 

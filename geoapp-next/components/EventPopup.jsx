@@ -3,6 +3,27 @@ import SolidButton from './SolidButton';
 import styles from '../styles/Popups.module.css';
 
 export default function EventPopup({ name, event, eventType, onDismiss }) {
+
+    function getDateString(val) {
+        let ds;
+        try {
+            ds = new Date(val).toLocaleDateString();
+        } catch {
+            ds = 'ERR';
+        }
+        return ds;
+    }
+
+    function getTimeString(val) {
+        let ts;
+        try {
+            ts = new Date(val).toLocaleTimeString();
+        } catch {
+            ts = 'ERR';
+        }
+        return ts;
+    }
+
     return (
         <div className={`${styles.popup} ${styles.eventPopup} ${eventType}`}>
             <h1>Event: {name}</h1>
@@ -22,11 +43,11 @@ export default function EventPopup({ name, event, eventType, onDismiss }) {
                     </tr>
                     <tr>
                         <td>Date</td>
-                        <td>{new Date(event.eventTime).toLocaleDateString()}</td>
+                        <td>{getDateString(event.eventTime)}</td>
                     </tr>
                     <tr>
                         <td>Time</td>
-                        <td>{new Date(event.eventTime).toLocaleTimeString()}</td>
+                        <td>{getTimeString(event.eventTime)}</td>
                     </tr>
                     <tr>
                         <td>Severity</td>

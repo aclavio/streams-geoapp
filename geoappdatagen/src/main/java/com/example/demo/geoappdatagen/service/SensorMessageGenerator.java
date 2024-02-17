@@ -142,6 +142,14 @@ public class SensorMessageGenerator {
                 .doubleValue();
         event.setLongitude(longitude);
         event.setGeohash(Geohash.stringEncode(longitude, latitude, 12));
+
+        // CHAOS MONKEY
+        int chaos = rand.nextInt(100);
+        if (chaos > 95) event.setLatitude(-200.0);
+        else if (chaos > 90) event.setLatitude(91.0);
+        else if (chaos > 85) event.setLongitude(200.0);
+        else if (chaos > 80) event.setLongitude(-181.0);
+
         return event;
     }
 }

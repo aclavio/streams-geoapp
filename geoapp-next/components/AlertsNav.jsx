@@ -25,7 +25,13 @@ export default function AlertsNav(props) {
     function getAlertTime(alert) {
         let lgdsDate = new Date(alert.lgdsEventTime);
         let rvssDate = new Date(alert.rvssEventTime);
-        return new Date(Math.min(lgdsDate.getTime(), rvssDate.getTime())).toString();
+        let alertDate;
+        try {
+            alertDate = new Date(Math.min(lgdsDate.getTime(), rvssDate.getTime())).toString();
+        } catch {
+            alertDate = 'ERR'
+        }
+        return alertDate;
     }
 
     return (

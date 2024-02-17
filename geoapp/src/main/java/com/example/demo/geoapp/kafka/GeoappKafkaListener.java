@@ -28,24 +28,9 @@ public class GeoappKafkaListener {
     @Qualifier("sensorEventsList")
     private List<BaseEvent> sensorEventsList;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
-
-//    @KafkaListener(id = "alertEventsGrp", topics = "${alert.events.topic.name}" , clientIdPrefix = "geoAppAlertsClient")
-//    public void listenAlertEvents(@Payload String message) {
-//        logger.info("Consumer Read Alert Event::" + message);
-//        try {
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            AlertEvent alertEvent = objectMapper.readValue(message, AlertEvent.class);
-//            //add to event list
-//            alertEventsList.add(alertEvent);
-//
-//        }catch (JsonProcessingException jpEx) {
-//            logger.error("Exception in parsing Alert Event message::", jpEx);
-//            jpEx.printStackTrace();
-//        }
-//
-//    }
+    @Autowired
+    @Qualifier("objectMapper")
+    private ObjectMapper objectMapper;
 
     @KafkaListener(
             id = "alertEventsGrp",
