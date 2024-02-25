@@ -118,7 +118,7 @@ export default function Home(props) {
     <div className={styles.container}>
       <Head>
         <meta charSet="utf-8" />
-        <title>Confluent Demo GeoApp Viewer</title>
+        <title>{process.env.NEXT_PUBLIC_GEOAPP_PAGE_TITLE}</title>
         <meta name="description" content="Confluent Demo GeoViewer" />
         <meta name="author" content="Confluent" />
         <link rel="icon" type="image/svg+xml" href="images/20200122-SVG-confluent_logo-mark-denim.svg"></link>
