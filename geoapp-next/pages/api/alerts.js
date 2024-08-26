@@ -1,38 +1,28 @@
-const alertTypes = ['Fence Cutting', 'Fence Climbing', 'Jumping', 'Car Driving', 'Car Speeding'];
+const { ALERT_LIST } = require('/lib/kafka-consumer-service.js')
 
-const randomAlertType = () => alertTypes[Math.floor(Math.random() * alertTypes.length)];
-
-const randomInRange = (min, max) => Math.random() * (max - min) + min;
-const randomLatitude = (min = -90, max = 90) => randomInRange(min, max);
-const randomLongitude = (min = -180, max = 180) => randomInRange(min, max);
-
-const BOUNDS = {
-  latMin: parseFloat(process.env.BOUNDS_LAT_MIN),
-  latMax: parseFloat(process.env.BOUNDS_LAT_MAX),
-  lonMin: parseFloat(process.env.BOUNDS_LON_MIN),
-  lonMax: parseFloat(process.env.BOUNDS_LON_MAX)
+function translateAlertFormat(raw) {
+  return {
+    "lgdsEventId": raw.LGDSEVENTID,
+    "lgdsEventLongitude": raw.LGDSEVENTLONGITUDE,
+    "lgdsEventLatitude": raw.LGDSEVENTLATITUDE,
+    "lgdsEventTime": raw.LGDSEVENTTIME,
+    "lgdsEventSeverity": raw.LGDSEVENTSEVERITY,
+    "lgdsEventType": raw.LGDSEVENTTYPE,
+    "lgdsGeoHash": raw.LGDSGEOHASH,
+    "rvssEventId": raw.RVSSEVENTID,
+    "rvssEventLongitude": raw.RVSSEVENTLONGITUDE,
+    "rvssEventLatitude": raw.RVSSEVENTLATITUDE,
+    "rvssEventTime": raw.RVSSEVENTTIME,
+    "rvssEventSeverity": raw.RVSSEVENTSEVERITY,
+    "rvssEventType": raw.RVSSEVENTTYPE,
+    "rvssGeoHash": raw.RVSSGEOHASH,
+    "geodistance": raw.GEODISTANCE
+  };
 }
 
-const createAlert = () => {
-  return {
-    "lgdsEventId": "lgds2",
-    "lgdsEventLongitude": randomLongitude(BOUNDS.lonMin, BOUNDS.lonMax),
-    "lgdsEventLatitude": randomLatitude(BOUNDS.latMin, BOUNDS.latMax),
-    "lgdsEventTime": new Date().getTime(),
-    "lgdsEventSeverity": "high",
-    "lgdsEventType": randomAlertType(),
-    "lgdsGeoHash": "wdw4f820h17g",
-    "rvssEventId": "rvss2",
-    "rvssEventLongitude": randomLongitude(BOUNDS.lonMin, BOUNDS.lonMax),
-    "rvssEventLatitude": randomLatitude(BOUNDS.latMin, BOUNDS.latMax),
-    "rvssEventTime": new Date().getTime(),
-    "rvssEventSeverity": "Critical",
-    "rvssEventType": randomAlertType(),
-    "rvssGeoHash": "wdw4f820h17g"
-  };
-};
-
 export default function handler(req, res) {
-  const alerts = [createAlert()]
+  //const alerts = [...ALERT_LIST];
+  const alerts = ALERT_LIST.map(alert => translateAlertFormat(alert));
+  ALERT_LIST.length = 0;
   res.status(200).json(alerts);
 }
